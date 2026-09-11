@@ -137,4 +137,712 @@
       background: #e3e7ee;
       border-radius: 20px;
       overflow: hidden;
-      margin: 15
+      margin: 15px 0;
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: #172033;
+      transition: width .6s;
+    }
+
+    .message {
+      text-align: center;
+      font-size: 19px;
+      font-weight: bold;
+      padding: 12px;
+    }
+
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .analysis-box {
+      background: #f4f7fb;
+      padding: 18px;
+      border-radius: 12px;
+    }
+
+    .analysis-box h3 {
+      margin-top: 0;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 7px;
+    }
+
+    .subject-result {
+      margin-bottom: 12px;
+    }
+
+    .subject-result-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .mini-bar {
+      height: 10px;
+      background: #e2e6ec;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .mini-fill {
+      height: 100%;
+      background: #172033;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 15px;
+      color: #667085;
+      font-size: 14px;
+    }
+
+    @media (max-width: 650px) {
+      header h1 {
+        font-size: 24px;
+      }
+
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .analysis-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .subject {
+        grid-template-columns: 1fr 95px;
+      }
+
+      .card {
+        padding: 17px;
+      }
+    }
+
+    @media print {
+      header {
+        background: white;
+        color: black;
+        border-bottom: 2px solid #172033;
+      }
+
+      .input-card,
+      footer,
+      button {
+        display: none !important;
+      }
+
+      .results {
+        display: block !important;
+      }
+
+      body {
+        background: white;
+      }
+
+      .card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Student Performance Analyzer</h1>
+  <p>Analyze results • Track progress • Reach your 90% target</p>
+</header>
+
+<div class="container">
+
+  <div class="card input-card">
+
+    <h2>Student Information</h2>
+
+    <label for="studentName">Student Name</label>
+    <input
+      id="studentName"
+      type="text"
+      placeholder="Enter student name"
+    >
+
+    <h2>Enter Scores</h2>
+
+    <div id="subjects"></div>
+
+    <div style="text-align:center; margin-top:20px;">
+
+      <button class="secondary" onclick="loadExample()">
+        Load Example
+      </button>
+
+      <button class="primary" onclick="analyze()">
+        Analyze Results
+      </button>
+
+      <button class="danger" onclick="resetApp()">
+        Reset
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="card results" id="results">
+
+    <h2 id="reportTitle">Performance Report</h2>
+
+    <div class="dashboard">
+
+      <div class="stat">
+        <div>Average</div>
+        <div class="stat-number" id="average">0%</div>
+      </div>
+
+      <div class="stat">
+        <div>90% Target</div>
+        <div class="stat-number" id="targetStatus">—</div>
+      </div>
+
+      <div class="stat">
+        <div>Subjects</div>
+        <div class="stat-number" id="subjectCount">0</div>
+      </div>
+
+    </div>
+
+
+    <div class="message" id="message"></div>
+
+    <h3>Progress Toward 90%</h3>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <p id="progressText"></p>
+
+
+    <div class="analysis-grid">
+
+      <div class="analysis-box">
+        <h3>🏆 Strong Subjects</h3>
+        <ul id="strongList"></ul>
+      </div>
+
+      <div class="analysis-box">
+        <h3>📚 Subjects to Improve</h3>
+        <ul id="improveList"></ul>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card results" id="subjectCard">
+
+    <h2>Subject-by-Subject Analysis</h2>
+
+    <div id="subjectResults"></div>
+
+  </div>
+
+
+  <div class="card results" id="adviceCard">
+
+    <h2>💡 Improvement Suggestions</h2>
+
+    <ul id="adviceList"></ul>
+
+  </div>
+
+
+  <div class="card results" id="reportCard">
+
+    <h2>Report Tools</h2>
+
+    <p>
+      Your analysis can be printed as a simple performance report.
+    </p>
+
+    <button class="primary" onclick="window.print()">
+      🖨️ Print / Save Report
+    </button>
+
+    <button class="secondary" onclick="saveResults()">
+      💾 Save in Browser
+    </button>
+
+  </div>
+
+</div>
+
+
+<footer>
+  Student Performance Analyzer V2
+  <br>
+  Educational student project — not an official grading system.
+</footer>
+
+
+<script>
+
+const subjects = [
+  "Amharic",
+  "English",
+  "Afaan Oromo",
+  "Mathematics",
+  "Physics",
+  "Chemistry",
+  "Biology",
+  "Geography",
+  "Information Technology",
+  "Citizenship",
+  "History",
+  "HPE",
+  "Economics"
+];
+
+
+function createInputs() {
+
+  const container = document.getElementById("subjects");
+
+  subjects.forEach((subject, index) => {
+
+    const row = document.createElement("div");
+
+    row.className = "subject";
+
+    row.innerHTML = `
+      <label for="score${index}">
+        ${subject}
+      </label>
+
+      <input
+        id="score${index}"
+        type="number"
+        min="0"
+        max="100"
+        placeholder="0-100"
+      >
+    `;
+
+    container.appendChild(row);
+
+  });
+
+}
+
+
+function analyze() {
+
+  let total = 0;
+  let count = 0;
+
+  let data = [];
+
+  subjects.forEach((subject, index) => {
+
+    const input = document.getElementById("score" + index);
+
+    if (input.value !== "") {
+
+      const score = Number(input.value);
+
+      if (score >= 0 && score <= 100) {
+
+        total += score;
+        count++;
+
+        data.push({
+          name: subject,
+          score: score
+        });
+
+      }
+
+    }
+
+  });
+
+
+  if (count === 0) {
+
+    alert("Please enter at least one valid score.");
+
+    return;
+
+  }
+
+
+  const average = total / count;
+
+  const name =
+    document.getElementById("studentName").value.trim()
+    || "Student";
+
+
+  document.getElementById("results").style.display = "block";
+  document.getElementById("subjectCard").style.display = "block";
+  document.getElementById("adviceCard").style.display = "block";
+  document.getElementById("reportCard").style.display = "block";
+
+
+  document.getElementById("reportTitle").textContent =
+    name + "'s Performance Report";
+
+
+  document.getElementById("average").textContent =
+    average.toFixed(2) + "%";
+
+
+  document.getElementById("subjectCount").textContent =
+    count;
+
+
+  const targetStatus =
+    average >= 90 ? "✓" : "—";
+
+  document.getElementById("targetStatus").textContent =
+    targetStatus;
+
+
+  const progress =
+    Math.min((average / 90) * 100, 100);
+
+  document.getElementById("progressBar").style.width =
+    progress + "%";
+
+
+  if (average >= 90) {
+
+    document.getElementById("message").textContent =
+      "Excellent! You have reached the 90% target.";
+
+    document.getElementById("progressText").textContent =
+      "🎯 Target achieved!";
+
+  } else {
+
+    const difference = 90 - average;
+
+    document.getElementById("message").textContent =
+      "Good progress — keep working toward 90%.";
+
+    document.getElementById("progressText").textContent =
+      difference.toFixed(2) +
+      " percentage points remain to reach 90%.";
+
+  }
+
+
+  createLists(data);
+
+  createSubjectAnalysis(data);
+
+  createAdvice(data, average);
+
+}
+
+
+function createLists(data) {
+
+  const strongList =
+    document.getElementById("strongList");
+
+  const improveList =
+    document.getElementById("improveList");
+
+
+  strongList.innerHTML = "";
+  improveList.innerHTML = "";
+
+
+  const strong =
+    data.filter(item => item.score >= 90);
+
+  const improve =
+    data.filter(item => item.score < 80);
+
+
+  if (strong.length === 0) {
+
+    strongList.innerHTML =
+      "<li>No subject has reached 90% yet.</li>";
+
+  } else {
+
+    strong.forEach(item => {
+
+      const li = document.createElement("li");
+
+      li.textContent =
+        item.name + ": " + item.score + "%";
+
+      strongList.appendChild(li);
+
+    });
+
+  }
+
+
+  if (improve.length === 0) {
+
+    improveList.innerHTML =
+      "<li>No subject is below 80%.</li>";
+
+  } else {
+
+    improve.forEach(item => {
+
+      const li = document.createElement("li");
+
+      li.textContent =
+        item.name + ": " + item.score + "%";
+
+      improveList.appendChild(li);
+
+    });
+
+  }
+
+}
+
+
+function createSubjectAnalysis(data) {
+
+  const container =
+    document.getElementById("subjectResults");
+
+  container.innerHTML = "";
+
+
+  data.forEach(item => {
+
+    const wrapper =
+      document.createElement("div");
+
+    wrapper.className =
+      "subject-result";
+
+
+    wrapper.innerHTML = `
+      <div class="subject-result-header">
+        <span>${item.name}</span>
+        <span>${item.score}%</span>
+      </div>
+
+      <div class="mini-bar">
+        <div
+          class="mini-fill"
+          style="width:${item.score}%">
+        </div>
+      </div>
+    `;
+
+
+    container.appendChild(wrapper);
+
+  });
+
+}
+
+
+function createAdvice(data, average) {
+
+  const list =
+    document.getElementById("adviceList");
+
+  list.innerHTML = "";
+
+
+  const weakSubjects =
+    data.filter(item => item.score < 80);
+
+
+  if (average < 90) {
+
+    const li = document.createElement("li");
+
+    li.textContent =
+      "Set a weekly study target and track your progress toward 90%.";
+
+    list.appendChild(li);
+
+  }
+
+
+  if (weakSubjects.length > 0) {
+
+    const li = document.createElement("li");
+
+    li.textContent =
+      "Give extra study time to: " +
+      weakSubjects.map(x => x.name).join(", ") + ".";
+
+    list.appendChild(li);
+
+  }
+
+
+  const math =
+    data.find(x => x.name === "Mathematics");
+
+  if (math && math.score < 90) {
+
+    const li = document.createElement("li");
+
+    li.textContent =
+      "Practice Mathematics regularly, especially problem-solving questions.";
+
+    list.appendChild(li);
+
+  }
+
+
+  const english =
+    data.find(x => x.name === "English");
+
+  if (english && english.score < 90) {
+
+    const li = document.createElement("li");
+
+    li.textContent =
+      "Improve English through daily reading, vocabulary, and writing practice.";
+
+    list.appendChild(li);
+
+  }
+
+
+  const it =
+    data.find(x => x.name === "Information Technology");
+
+  if (it && it.score < 90) {
+
+    const li = document.createElement("li");
+
+    li.textContent =
+      "Strengthen Information Technology through practical computer projects.";
+
+    list.appendChild(li);
+
+  }
+
+
+  if (list.children.length === 0) {
+
+    list.innerHTML =
+      "<li>Excellent performance. Continue consistent study habits.</li>";
+
+  }
+
+}
+
+
+function loadExample() {
+
+  document.getElementById("studentName").value =
+    "Example Student";
+
+
+  const example = [
+    90,
+    85,
+    75,
+    88,
+    86,
+    84,
+    94,
+    91,
+    89,
+    93,
+    92,
+    78,
+    87
+  ];
+
+
+  example.forEach((score, index) => {
+
+    document.getElementById("score" + index).value =
+      score;
+
+  });
+
+
+  analyze();
+
+}
+
+
+function saveResults() {
+
+  const name =
+    document.getElementById("studentName").value;
+
+  const average =
+    document.getElementById("average").textContent;
+
+
+  localStorage.setItem(
+    "studentName",
+    name
+  );
+
+  localStorage.setItem(
+    "studentAverage",
+    average
+  );
+
+
+  alert("Your basic result has been saved in this browser.");
+
+}
+
+
+function resetApp() {
+
+  document.getElementById("studentName").value = "";
+
+  subjects.forEach((subject, index) => {
+
+    document.getElementById("score" + index).value = "";
+
+  });
+
+
+  document.getElementById("results").style.display = "none";
+  document.getElementById("subjectCard").style.display = "none";
+  document.getElementById("adviceCard").style.display = "none";
+  document.getElementById("reportCard").style.display = "none";
+
+}
+
+
+createInputs();
+
+</script>
+
+</body>
+  </html>

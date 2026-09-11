@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Performance Analyzer</title>
+  <title>Student Performance Analyzer V2</title>
 
   <style>
     * {
@@ -13,7 +13,7 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f4f7fb;
+      background: #f3f6fa;
       color: #172033;
     }
 
@@ -21,12 +21,12 @@
       background: #172033;
       color: white;
       text-align: center;
-      padding: 28px 15px;
+      padding: 30px 15px;
     }
 
     header h1 {
       margin: 0 0 8px;
-      font-size: 28px;
+      font-size: 30px;
     }
 
     header p {
@@ -35,20 +35,20 @@
     }
 
     .container {
-      max-width: 850px;
+      max-width: 950px;
       margin: 25px auto;
       padding: 0 15px;
     }
 
     .card {
       background: white;
-      border-radius: 16px;
       padding: 22px;
       margin-bottom: 20px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      border-radius: 16px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.08);
     }
 
-    .card h2 {
+    h2 {
       margin-top: 0;
     }
 
@@ -87,447 +87,54 @@
       border: none;
       border-radius: 9px;
       padding: 13px 18px;
-      font-size: 16px;
+      margin: 5px;
+      font-size: 15px;
       font-weight: bold;
       cursor: pointer;
-      margin: 5px;
     }
 
-    .calculate {
+    .primary {
       background: #172033;
       color: white;
     }
 
-    .example {
-      background: #e8eef8;
+    .secondary {
+      background: #e7edf6;
       color: #172033;
     }
 
-    .reset {
+    .danger {
       background: #eeeeee;
       color: #333;
     }
 
-    .result {
+    .results {
       display: none;
     }
 
-    .big-number {
-      font-size: 42px;
-      font-weight: bold;
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat {
+      background: #f4f7fb;
+      padding: 18px;
+      border-radius: 12px;
       text-align: center;
-      margin: 10px 0;
+    }
+
+    .stat-number {
+      font-size: 30px;
+      font-weight: bold;
+      margin-top: 8px;
     }
 
     .progress-container {
-      background: #e5e9f0;
+      height: 24px;
+      background: #e3e7ee;
       border-radius: 20px;
-      height: 22px;
       overflow: hidden;
-      margin: 12px 0;
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: #172033;
-      transition: width 0.6s;
-    }
-
-    .message {
-      text-align: center;
-      font-size: 18px;
-      font-weight: bold;
-      margin: 15px 0;
-    }
-
-    .lists {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
-    .list-box {
-      padding: 15px;
-      border-radius: 10px;
-      background: #f4f7fb;
-    }
-
-    .list-box h3 {
-      margin-top: 0;
-    }
-
-    ul {
-      padding-left: 20px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 25px;
-      color: #667085;
-      font-size: 14px;
-    }
-
-    @media (max-width: 600px) {
-      header h1 {
-        font-size: 23px;
-      }
-
-      .subject {
-        grid-template-columns: 1fr 95px;
-      }
-
-      .lists {
-        grid-template-columns: 1fr;
-      }
-
-      .card {
-        padding: 17px;
-      }
-    }
-  </style>
-</head>
-
-<body>
-
-<header>
-  <h1>Student Performance Analyzer</h1>
-  <p>Analyze your school results and track your 90% target.</p>
-</header>
-
-<div class="container">
-
-  <div class="card">
-    <h2>Student Information</h2>
-
-    <label for="studentName">Student Name</label>
-    <input
-      type="text"
-      id="studentName"
-      placeholder="Enter your name"
-    >
-
-    <h2>Enter Your Scores</h2>
-
-    <div id="subjects"></div>
-
-    <div style="text-align:center; margin-top:20px;">
-      <button class="example" onclick="loadExample()">
-        Load Example
-      </button>
-
-      <button class="calculate" onclick="calculateResults()">
-        Analyze Results
-      </button>
-
-      <button class="reset" onclick="resetForm()">
-        Reset
-      </button>
-    </div>
-  </div>
-
-
-  <div class="card result" id="resultCard">
-
-    <h2>Performance Result</h2>
-
-    <div class="big-number" id="averageResult">
-      0%
-    </div>
-
-    <div class="message" id="performanceMessage"></div>
-
-    <h3>Progress Toward 90%</h3>
-
-    <div class="progress-container">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
-
-    <p id="progressText"></p>
-
-    <div class="lists">
-
-      <div class="list-box">
-        <h3>Strong Subjects</h3>
-        <ul id="strongSubjects"></ul>
-      </div>
-
-      <div class="list-box">
-        <h3>Subjects to Improve</h3>
-        <ul id="improveSubjects"></ul>
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-<footer>
-  Student Performance Analyzer — Educational Student Project
-  <br>
-  This tool is for learning and analysis and is not an official grading system.
-</footer>
-
-
-<script>
-
-const subjectNames = [
-  "Amharic",
-  "English",
-  "Afaan Oromo",
-  "Mathematics",
-  "Physics",
-  "Chemistry",
-  "Biology",
-  "Geography",
-  "Information Technology",
-  "Citizenship",
-  "History",
-  "HPE",
-  "Economics"
-];
-
-
-function createSubjects() {
-
-  const container = document.getElementById("subjects");
-
-  container.innerHTML = "";
-
-  subjectNames.forEach((subject, index) => {
-
-    const div = document.createElement("div");
-
-    div.className = "subject";
-
-    div.innerHTML = `
-      <label for="score${index}">
-        ${subject}
-      </label>
-
-      <input
-        type="number"
-        id="score${index}"
-        min="0"
-        max="100"
-        placeholder="0-100"
-      >
-    `;
-
-    container.appendChild(div);
-
-  });
-
-}
-
-
-function calculateResults() {
-
-  let total = 0;
-  let count = 0;
-
-  let strong = [];
-  let improve = [];
-
-  subjectNames.forEach((subject, index) => {
-
-    const input = document.getElementById("score" + index);
-
-    const value = Number(input.value);
-
-    if (input.value !== "" && value >= 0 && value <= 100) {
-
-      total += value;
-      count++;
-
-      if (value >= 90) {
-        strong.push(subject + " (" + value + "%)");
-      }
-
-      if (value < 80) {
-        improve.push(subject + " (" + value + "%)");
-      }
-
-    }
-
-  });
-
-
-  if (count === 0) {
-
-    alert("Please enter at least one valid score.");
-
-    return;
-
-  }
-
-
-  const average = total / count;
-
-  document.getElementById("resultCard").style.display = "block";
-
-  document.getElementById("averageResult").textContent =
-    average.toFixed(2) + "%";
-
-
-  let message = "";
-
-  if (average >= 90) {
-
-    message = "Excellent! You have reached the 90% target.";
-
-  } else if (average >= 85) {
-
-    message = "Very good! You are close to the 90% target.";
-
-  } else if (average >= 70) {
-
-    message = "Good progress. Keep improving.";
-
-  } else {
-
-    message = "Keep working consistently and focus on your weaker subjects.";
-
-  }
-
-
-  document.getElementById("performanceMessage").textContent =
-    message;
-
-
-  const progress = Math.min((average / 90) * 100, 100);
-
-  document.getElementById("progressBar").style.width =
-    progress + "%";
-
-
-  if (average >= 90) {
-
-    document.getElementById("progressText").textContent =
-      "Target achieved: 90%+";
-
-  } else {
-
-    const needed = 90 - average;
-
-    document.getElementById("progressText").textContent =
-      "You are " + needed.toFixed(2) +
-      " percentage points away from 90%.";
-
-  }
-
-
-  const strongList =
-    document.getElementById("strongSubjects");
-
-  const improveList =
-    document.getElementById("improveSubjects");
-
-
-  strongList.innerHTML = "";
-
-  improveList.innerHTML = "";
-
-
-  if (strong.length === 0) {
-
-    strongList.innerHTML =
-      "<li>No subject has reached 90% yet.</li>";
-
-  } else {
-
-    strong.forEach(item => {
-
-      const li = document.createElement("li");
-
-      li.textContent = item;
-
-      strongList.appendChild(li);
-
-    });
-
-  }
-
-
-  if (improve.length === 0) {
-
-    improveList.innerHTML =
-      "<li>No subject is below 80%.</li>";
-
-  } else {
-
-    improve.forEach(item => {
-
-      const li = document.createElement("li");
-
-      li.textContent = item;
-
-      improveList.appendChild(li);
-
-    });
-
-  }
-
-}
-
-
-function loadExample() {
-
-  document.getElementById("studentName").value =
-    "Example Student";
-
-
-  const exampleScores = [
-    90,
-    85,
-    75,
-    88,
-    86,
-    84,
-    94,
-    91,
-    89,
-    93,
-    92,
-    78,
-    87
-  ];
-
-
-  exampleScores.forEach((score, index) => {
-
-    document.getElementById("score" + index).value =
-      score;
-
-  });
-
-
-  calculateResults();
-
-}
-
-
-function resetForm() {
-
-  document.getElementById("studentName").value = "";
-
-  subjectNames.forEach((subject, index) => {
-
-    document.getElementById("score" + index).value = "";
-
-  });
-
-
-  document.getElementById("resultCard").style.display =
-    "none";
-
-}
-
-
-createSubjects();
-
-</script>
-
-</body>
-</html>
+      margin: 15
